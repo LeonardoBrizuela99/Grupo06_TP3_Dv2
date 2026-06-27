@@ -250,7 +250,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: -6.59, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -334,7 +334,7 @@ Transform:
   m_GameObject: {fileID: 619394800}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -6.59, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -389,7 +389,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1706493337}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -408,6 +408,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1706493342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706493337}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ae085f3f97d55744aa6ca7b171e6584, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1001 &1740650159
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -479,7 +491,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5849445782033574293, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.02
+      value: -6.35
       objectReference: {fileID: 0}
     - target: {fileID: 5849445782033574293, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -517,6 +529,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 9057983868117002922, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
+      propertyPath: m_Name
+      value: Hitbox
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -527,6 +543,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6213963804222801663, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1706493340}
+    - targetCorrespondingSourceObject: {fileID: 6213963804222801663, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1706493342}
   m_SourcePrefab: {fileID: 100100000, guid: 965bea8ae542f3b4c806f864ea55241b, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
