@@ -12,4 +12,13 @@ public class ButtonsFunctions : MonoBehaviour
     {
         Time.timeScale = 1.0f;
     }
+
+    public void CloseGame()
+    {
+        Application.Quit();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#endif
+    }
 }
