@@ -5,14 +5,17 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] GameObject Hud;
     [SerializeField] GameObject GameOverScreen;
+    [SerializeField] GameObject WinScreen;
 
     public float speed = 2;
     public float jumpForce = 4;
-    private float move;
     public float groundRadius = 0.1f;
     
-    private int coins;
+    private float move;
     
+    private int coins;
+    private int coinsCount = 0;
+
     private bool isGrounded;
     
     private Rigidbody2D rb2d;
@@ -29,6 +32,11 @@ public class PlayerController : MonoBehaviour
     public AudioClip barrelClip;
     public AudioClip spikeClip;
     public AudioClip jumpClip;
+
+    private void Awake()
+    {
+        coinsCount = GameObject.FindGameObjectsWithTag("Coin").Length;
+    }
 
     private void Start()
     {
@@ -57,6 +65,14 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("Speed", Mathf.Abs(move));
         animator.SetFloat("VerticalVelocity", rb2d.linearVelocity.y);
         animator.SetBool("isGrounded", isGrounded);
+
+        if (coins >= coinsCount)
+        {
+            Hud.SetActive(false);
+            WinScreen.SetActive(true);
+
+            Time.timeScale = 0;
+        }
     }
 
     private void FixedUpdate()
