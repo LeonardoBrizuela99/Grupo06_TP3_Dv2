@@ -1,9 +1,11 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] GameObject Hud;
+    [SerializeField] GameObject GameOverScreen;
+
     public float speed = 2;
     public float jumpForce = 4;
     private float move;
@@ -56,6 +58,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("VerticalVelocity", rb2d.linearVelocity.y);
         animator.SetBool("isGrounded", isGrounded);
     }
+
     private void FixedUpdate()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
@@ -78,9 +81,13 @@ public class PlayerController : MonoBehaviour
         if (collision.transform.CompareTag("Spikes"))
         {
             audioSource.PlayOneShot(spikeClip);
-            
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+
+            Hud.SetActive(false);
+            GameOverScreen.SetActive(true);
+
+            Time.timeScale = 0;
         }
+
         if (collision.transform.CompareTag("Barrel"))
         {
             audioSource.PlayOneShot(barrelClip);
@@ -101,7 +108,5 @@ public class PlayerController : MonoBehaviour
             
             Destroy(collision.gameObject, 0.5f);
         }
-
-
     }
 }
