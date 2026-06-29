@@ -15,7 +15,14 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     private int coins;
+
     public TMP_Text textCoins;
+
+    public AudioSource audioSource;
+    public AudioClip coinClip;
+    public AudioClip barrelClip;
+    public AudioClip spikeClip;
+    public AudioClip jumpClip;
     private void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
@@ -33,7 +40,7 @@ public class PlayerController : MonoBehaviour
         }
         if (Input.GetButtonDown("Jump") && isGrounded)
         {
-
+            audioSource.PlayOneShot(jumpClip);
             rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
 
         }
@@ -51,7 +58,7 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.transform.CompareTag("Coin"))
         {
-
+            audioSource.PlayOneShot(coinClip);
             Destroy(collision.gameObject);
             coins++;
             textCoins.text = coins.ToString();
@@ -60,10 +67,12 @@ public class PlayerController : MonoBehaviour
 
         if (collision.transform.CompareTag("Spikes"))
         {
+            audioSource.PlayOneShot(spikeClip);
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
         if (collision.transform.CompareTag("Barrel"))
         {
+            audioSource.PlayOneShot(barrelClip);
             Vector2 knockbackDir = (rb2d.position - (Vector2)collision.transform.position).normalized;
 
             rb2d.linearVelocity = Vector2.zero;
