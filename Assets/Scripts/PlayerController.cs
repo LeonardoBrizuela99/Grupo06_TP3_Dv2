@@ -1,139 +1,128 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
-{  
-    [Header("Movement Settings")]
-    [SerializeField] private float speed = 2f;
-    [SerializeField] private float jumpForce = 4f;
+{
+    [SerializeField] GameObject Hud;
+    [SerializeField] GameObject GameOverScreen;
+    [SerializeField] GameObject WinScreen;
 
-    [Header("Ground Detection")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundRadius = 0.1f;
-    [SerializeField] private LayerMask groundLayer;
+    public float speed = 2;
+    public float jumpForce = 4;
+    public float groundRadius = 0.1f;
+    
+    private float move;
+    
+    private int coins;
+    private int coinsCount = 0;
 
-    [Header("UI References")]
-    [SerializeField] private TMP_Text textCoins;
-
-    [Header("Audio Settings")]
-    [SerializeField] private AudioSource audioSource;
-    [SerializeField] private AudioClip coinClip;
-    [SerializeField] private AudioClip barrelClip;
-    [SerializeField] private AudioClip spikeClip;
-    [SerializeField] private AudioClip jumpClip;
-   
-    private Rigidbody2D rb2d;
-    private Animator animator;
-    private float moveInput;
     private bool isGrounded;
-    private int coinsCount;
-    private const int MAX_COINS_VICTORY = 30;
-     
+    
+    private Rigidbody2D rb2d;
+    
+    public Transform groundCheck;
+    private Animator animator;
+    
+    public LayerMask groundLayer;
+
+    public TMP_Text textCoins;
+
+    public AudioSource audioSource;
+    public AudioClip coinClip;
+    public AudioClip barrelClip;
+    public AudioClip spikeClip;
+    public AudioClip jumpClip;
+
+    private void Awake()
+    {
+        coinsCount = GameObject.FindGameObjectsWithTag("Coin").Length;
+    }
+
     private void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
-    private void Update()
+
+    void Update()
     {
-        HandleMovement();
-        HandleJump();
-        UpdateAnimator();
+        move = Input.GetAxisRaw("Horizontal");
+        
+        rb2d.linearVelocity = new Vector2(move * speed, rb2d.linearVelocity.y);
+
+        if (move != 0)
+        {
+            transform.localScale = new Vector3(Mathf.Sign(move), 1, 1);
+        }
+        
+        if (Input.GetButtonDown("Jump") && isGrounded)
+        {
+            audioSource.PlayOneShot(jumpClip);
+
+            rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
+        }
+
+        animator.SetFloat("Speed", Mathf.Abs(move));
+        animator.SetFloat("VerticalVelocity", rb2d.linearVelocity.y);
+        animator.SetBool("isGrounded", isGrounded);
+
+        if (coins >= coinsCount)
+        {
+            Hud.SetActive(false);
+            WinScreen.SetActive(true);
+
+            Time.timeScale = 0;
+        }
     }
+
     private void FixedUpdate()
     {
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
     }
+
     private void OnTriggerEnter2D(Collider2D collision)
-    {
-        HandleTriggers(collision);
-    } 
-    private void HandleMovement()
-    {
-        moveInput = Input.GetAxisRaw("Horizontal");
-        rb2d.linearVelocity = new Vector2(moveInput * speed, rb2d.linearVelocity.y);
-        if (moveInput != 0)
-        {
-            transform.localScale = new Vector3(Mathf.Sign(moveInput), 1, 1);
-        }
-    }
-    private void HandleJump()
-    {
-        if (Input.GetButtonDown("Jump") && isGrounded)
-        {
-            if (audioSource != null && jumpClip != null)
-            {
-                audioSource.PlayOneShot(jumpClip);
-            }
-            rb2d.linearVelocity = new Vector2(rb2d.linearVelocity.x, jumpForce);
-        }
-    }
-    private void UpdateAnimator()
-    {
-        animator.SetFloat("Speed", Mathf.Abs(moveInput));
-        animator.SetFloat("VerticalVelocity", rb2d.linearVelocity.y);
-        animator.SetBool("isGrounded", isGrounded); 
-    }  
-    private void HandleTriggers(Collider2D collision)
     {
         if (collision.transform.CompareTag("Coin"))
         {
-            PlayAudio(coinClip);
+            audioSource.PlayOneShot(coinClip);
+            
             Destroy(collision.gameObject);
-            coinsCount++;
-            if (textCoins != null)
-            {
-                textCoins.text = coinsCount.ToString();
-            }
-            CheckVictoryCondition();
+            
+            coins++;
+            
+            textCoins.text = coins.ToString();
+
         }
+
         if (collision.transform.CompareTag("Spikes"))
         {
-            PlayAudio(spikeClip);
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            audioSource.PlayOneShot(spikeClip);
+
+            Hud.SetActive(false);
+            GameOverScreen.SetActive(true);
+
+            Time.timeScale = 0;
         }
+
         if (collision.transform.CompareTag("Barrel"))
         {
-            PlayAudio(barrelClip);
-            ApplyBarrelKnockback(collision);
-            TriggerBarrelDestruction(collision.gameObject);
-        }
-    }
-    private void CheckVictoryCondition()
-    {
-        if (coinsCount >= MAX_COINS_VICTORY)
-        {
-            SceneManager.LoadScene("Victory");
-        }
-    }
-    private void ApplyBarrelKnockback(Collider2D collision)
-    {
-        Vector2 knockbackDir = (rb2d.position - (Vector2)collision.transform.position).normalized;
-        rb2d.linearVelocity = Vector2.zero;
-        rb2d.AddForce(knockbackDir * 3f, ForceMode2D.Impulse);
-    }
-    private void TriggerBarrelDestruction(GameObject barrel)
-    {
-        BoxCollider2D[] colliders = barrel.GetComponents<BoxCollider2D>();
-        foreach (BoxCollider2D col in colliders)
-        {
-            col.enabled = false;
-        }
-        Animator barrelAnim = barrel.GetComponent<Animator>();
-        if (barrelAnim != null)
-        {
-            barrelAnim.enabled = true;
-        }
-        Destroy(barrel, 0.5f);
-    }
-    private void PlayAudio(AudioClip clip)
-    {
-        if (audioSource != null && clip != null)
-        {
-            audioSource.PlayOneShot(clip);
+            audioSource.PlayOneShot(barrelClip);
+            
+            Vector2 knockbackDir = (rb2d.position - (Vector2)collision.transform.position).normalized;
+
+            rb2d.linearVelocity = Vector2.zero;
+            rb2d.AddForce(knockbackDir * 3, ForceMode2D.Impulse);
+           
+            BoxCollider2D[] colliders=collision.gameObject.GetComponents<BoxCollider2D>();
+            
+            foreach (BoxCollider2D col in colliders)
+            {
+                col.enabled = false;
+            }
+            
+            collision.GetComponent<Animator>().enabled = true;
+            
+            Destroy(collision.gameObject, 0.5f);
         }
     }
 }
